@@ -19,7 +19,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests
+          pip install playwright requests
+          playwright install chromium
 
-      - name: Run monitor
+      - name: Run script
         run: python monitor.py
