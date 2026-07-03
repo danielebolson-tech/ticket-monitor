@@ -1,6 +1,6 @@
-from playwright.sync_api import sync_playwright
+ffrom playwright.sync_api import sync_playwright
 import requests
-import re
+import json
 
 URL = "https://fwc26-resale-usd.tickets.fifa.com"
 
@@ -23,27 +23,45 @@ def send(msg):
 
 
 def main():
+    captured_prices = []
+
+    def handle_response(response):
+        try:
+            if "application/json" in response.headers.get("content-type", ""):
+                data = response.json()
+
+                text = json.dumps(data)
+
+                # crude but effective extraction fallback
+                import re
+                prices = re.findall(r"\$(\d{3,5})", text)
+
+                for p in prices:
+                    captured_prices.append(int(p))
+        except:
+            pass
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        # IMPORTANT: wait for real page load
-        page.goto(URL, wait_until="networkidle")
-        page.wait_for_timeout(12000)
+        page.on("response", handle_response)
 
-        html = page.content()
+        page.goto(URL)
+        page.wait_for_timeout(15000)
 
-        print("HTML length:", len(html))  # DEBUG
+        browser.close()
 
-        prices = re.findall(r"\$(\d{3,5})", html)
-        prices = [int(p) for p in prices if 200 <= int(p) <= 20000]
+    if not captured_prices:
+        print("No prices found in network traffic")
+        return
 
-        lowest = min(prices) if prices else None
+    lowest = min(captured_prices)
 
-        print("Lowest price:", lowest)
+    print("Lowest price:", lowest)
 
-        if lowest and lowest <= TARGET_PRICE:
-            send(f"🔥 FIFA DROP: ${lowest}")
+    if lowest <= TARGET_PRICE:
+        send(f"🔥 FIFA DROP: ${lowest}")
 
 
 if __name__ == "__main__":
