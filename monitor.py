@@ -13,8 +13,8 @@ def send(message):
     requests.post(
         "https://api.pushover.net/1/messages.json",
         data={
-            "token": a8mspr1u5d3o9fdbpwneek52ksiz2q
-            "user": ugi2wnwf8mo4v7bw555xr441wxc6qo
+            "token": "a8mspr1u5d3o9fdbpwneek52ksiz2q"
+            "user": "ugi2wnwf8mo4v7bw555xr441wxc6qo"
             "message": message,
             "title": "FIFA Monitor"
         }
