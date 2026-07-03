@@ -4,7 +4,7 @@ import re
 
 URL = "https://fwc26-resale-usd.tickets.fifa.com"
 
-TARGET_PRICE = 1500
+TARGET_PRICE = 100000
 
 PUSHOVER_USER_KEY = "ugi2wnwf8mo4v7bw555xr441wxc6qo"
 PUSHOVER_API_TOKEN = "a8mspr1u5d3o9fdbpwneek52ksiz2q"
