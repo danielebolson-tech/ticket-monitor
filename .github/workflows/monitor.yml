@@ -1,15 +1,16 @@
-name: Ticket Monitor Starter
+name: FIFA Ticket Monitor
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"
 
 jobs:
   run-monitor:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -20,6 +21,5 @@ jobs:
         run: |
           pip install requests
 
-      - name: Run simple test monitor
-        run: |
-          python -c "print('✅ GitHub Actions is working correctly')"
+      - name: Run monitor
+        run: python monitor.py
