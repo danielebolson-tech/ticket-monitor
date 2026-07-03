@@ -15,22 +15,11 @@ def send(msg):
         "https://api.pushover.net/1/messages.json",
         data={
             "token": "a8mspr1u5d3o9fdbpwneek52ksiz2q",
-            "user": "ugi2wnwf8mo4v7bw555xr441wxc6qo",
+            "user": "ugi2wnwf8mo4v7bw555xr441wxc6qo"",
             "message": msg,
             "title": "FIFA Monitor"
         }
     )
-
-
-def extract_prices(page):
-    page.wait_for_timeout(8000)
-
-    html = page.content()
-
-    prices = re.findall(r"\$(\d{3,5})", html)
-    prices = [int(p) for p in prices if 200 <= int(p) <= 20000]
-
-    return min(prices) if prices else None
 
 
 def main():
@@ -38,16 +27,23 @@ def main():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
 
-        page.goto(URL)
+        # IMPORTANT: wait for real page load
+        page.goto(URL, wait_until="networkidle")
+        page.wait_for_timeout(12000)
 
-        price = extract_prices(page)
+        html = page.content()
 
-        browser.close()
+        print("HTML length:", len(html))  # DEBUG
 
-        print("Lowest price:", price)
+        prices = re.findall(r"\$(\d{3,5})", html)
+        prices = [int(p) for p in prices if 200 <= int(p) <= 20000]
 
-        if price and price <= TARGET_PRICE:
-            send(f"🔥 FIFA DROP: ${price}")
+        lowest = min(prices) if prices else None
+
+        print("Lowest price:", lowest)
+
+        if lowest and lowest <= TARGET_PRICE:
+            send(f"🔥 FIFA DROP: ${lowest}")
 
 
 if __name__ == "__main__":
